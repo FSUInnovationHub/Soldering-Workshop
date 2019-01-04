@@ -1,0 +1,16 @@
+{
+  "name": "soldering_workshop",
+  "version": "1.0.0",
+  "description": "Document for solering workshop at the fsu innovation hub",
+  "main": "index.js",
+  "dependencies": {
+    "excel-as-json": "^2.0.1",
+    "markto": "^1.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Henry Troutman",
+  "license": "ISC"
+}
