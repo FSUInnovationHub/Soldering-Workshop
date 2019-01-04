@@ -1,0 +1,164 @@
+<template name="title">
+  {% set settings = {}|merge(globals.title)|merge(attributes)%}
+  \begin{titlepage}
+    \centering
+    	{\scshape\LARGE {{settings.university|default('University Not Specified')}} \par}
+    	\vspace{0.75cm}
+    	{\scshape\large {{ settings.department|default('Department Not Specified') }} \par}
+    	\vspace{0.5cm}
+    	{\scshape\large {{ settings.semester|default('Semester Not Specified')}} \par}
+    	\vspace{1cm}
+    	{\Large\bfseries {{settings.assignment|default('Assignment Not Specified')}}\par}
+      \vfill
+      {% if settings.others %}
+      \def\arraystretch{2.5}
+      \begin{tabular}{ | l | r |}
+        \hline
+        {% for item in settings.others %}
+          {\Large {{item[0]}} }  {{"&"}} { \Large {{item[1]}} } \\ \hline
+        {% endfor %}
+        {\Large Date Delivered }  {{"&"}} { \Large \today } \\ \hline
+        \end{tabular}
+      {% endif %}
+      \vspace{3cm}
+  \end{titlepage}
+</template>
+<template name="document">
+  \documentclass{{ "{"~ attributes.class|default('article') ~"}" }}
+  {{j(element).find('head').text()}}
+  \begin{document}
+    {{j(element).find('body').text()}}
+  \end{document}
+</template>
+
+<template name="head">
+  {{ j(element).text() }}
+</template>
+<template name="body">
+  {{ j(element).text() }}
+</template>
+
+<template name="report">
+  {% set settings = {}|merge(globals)|merge(attributes)%}
+  <document>
+    <head>
+      \usepackage[english]{babel}
+      \usepackage[utf8]{inputenc}
+      \usepackage{graphicx}
+      \usepackage{float}
+      \usepackage[margin={{attributes.margin|default('0.7in')}}]{geometry}
+      \usepackage{caption}
+      \usepackage{subcaption}
+      \newcommand{\parallelsum}{\mathbin{\|}}
+      {% if settings.title.right_head or settings.title.left_head %}
+        \usepackage{fancyhdr}
+        \pagestyle{fancy}
+        \fancyhf{}
+        {% if settings.title.right_head %}
+          \rhead{ {{ settings.title.right_head }} }
+        {% endif %}
+        {% if settings.title.left_head %}
+          \lhead{ {{settings.title.left_head }} }
+        {% endif %}
+        {% if settings.title.name %}
+          \lfoot{ {{ settings.title.name }} }
+        {% endif %}
+        \rfoot{Page \thepage }
+      {% endif %}
+    </head>
+    <body>
+      \pagenumbering{roman}
+      {{ j(element).find('title').text()}}
+      {{ j(element).find('title').remove()?"":"" }}
+      \clearpage
+      \newpage
+      %\tableofcontents
+      \newpage
+      \pagenumbering{arabic}
+      {{ j(element).text() }}
+    </body>
+  </document>
+</template>
+<template name="section">
+  {% if j(element).html()|replace({' ':'', '\n':''})|length != 0 %}
+    {% set len = j(element).parents('section').length %}
+  {% else %}
+    {% set len = 0 %}
+  {% endif %}
+  {% set str = "" %}
+  {% for i in 0..(len-1) if len > 0 %}
+    {% set str = str~"sub" %}
+  {% endfor %}
+  \{{str}}section{{ "{" ~ attributes.title ~ "}" }}
+  {{ j(element).text() }}
+
+</template>
+<template name="table">
+  {% if j(element).find('csv') %}
+    {% set data = j(element).find('csv').data() %}
+    \begin{center}
+    \begin{tabular}{ | {% for x in data[0] %} c |{% endfor %} }
+      \hline
+        {% for x in data %}
+          {{x|join('&')}} \\ \hline
+        {% endfor %}
+      \end{tabular}
+    \end{center}
+  {% endif %}
+</template>
+<template name="global_table">
+  {% if attributes.name %}
+    {% set table = globals.tables[attributes.name] %}
+
+    \begin{table}[H]
+    \centering
+    \begin{tabular}{{ '{' ~ attributes.legend|default(table.legend) ~ '}' }}
+      {% if attributes.noline %}{{ table.rows_noline }}
+      {% else %} {{table.rows}}
+      {% endif %}
+    \end{tabular}
+    \caption{{ '{' ~ attributes.caption|default(table.description) ~ '}' }}
+    \label{{'{' ~ attributes.label|default('tab:'~attributes.name) ~ '}'}}
+    \end{table}
+  {% endif %}
+</template>
+<template name="figure">
+\begin{figure}[{{ attributes.position|default('H') }}]
+\caption{ {{attributes.caption|default(attributes.src)}} }
+\label{{'{'~ (attributes.label|default('fig:' ~ attributes.src )) ~'}'}}
+\centering
+\includegraphics[width={{attributes.size|default('0.75\textwidth')}}]{{ '{'~ attributes.src ~'}' }}
+\end{figure}
+</template>
+
+<template name="list">
+  {% set type_raw = '{' ~ attributes.type|default('enumerate') ~ '}' %}
+  \begin{{type_raw}}
+  {{j(element).text()}}
+  \end{{type_raw}}
+</template>
+<template name="item">\item </template>
+<template name="eqtable">
+\bgroup
+\def\arraystretch{ {{attributes.space|default('1')}} }
+{{j(element).text()}}
+<global_table name="{{attributes.name}}" legend="{{attributes.legend|default('c c c c')}}" noline="true"/>
+\egroup
+</template>
+<template name="figurecol">
+  \begin{figure}
+\centering
+\begin{minipage}{ {{attributes.width1|default('0.5\textwidth')}} }
+  \centering
+  \includegraphics[width={{attributes.size1|default('0.75\textwidth')}}]{{ '{'~ attributes.src1 ~'}' }}
+  \captionof{figure}{ {{attributes.caption1|default(attributes.src1)}} }
+  \label{{'{'~ (attributes.label1|default('fig:' ~ attributes.src1 )) ~'}'}}
+\end{minipage}%
+\begin{minipage}{ {{attributes.width1|default('0.5\textwidth')}} }
+  \centering
+  \includegraphics[width={{attributes.size2|default('0.75\textwidth')}}]{{ '{'~ attributes.src2 ~'}' }}
+  \captionof{figure}{ {{attributes.caption2|default(attributes.src2)}} }
+  \label{{'{'~ (attributes.label2|default('fig:' ~ attributes.src2 )) ~'}'}}
+\end{minipage}
+\end{figure}
+</template>
