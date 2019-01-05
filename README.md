@@ -2,15 +2,15 @@
 These are the files that were used to compile the soldering workshop document. The document
 relies on a markdown language I built [here](https://github.com/Henguin1001/Hentex). It is built
 off of nodejs and uses xml for the templates. The template compiles to latex so nodejs, npm, and latex are
-required to compile the document for yourself. The pdf for the workshop is in the repository.
-The document has many images, so it is quite large and can take time to load.
+required to compile the document for yourself. The pdf for the workshop is in the [repository](https://github.com/FSUInnovationHub/Soldering-Workshop/blob/master/document_output.pdf).
+The document has many images, so it is quite large and can take time to load. the github viewer probably won't work so use the download option.
 
 ## Compiling the Document
-First Nodejs, and npm need to be installed, then clone this repository.
+First Nodejs and npm need to be installed, then clone this repository.
 Next, run `npm install` in the repository. This will add all the required dependencies. Finally run  `node index.js`
 This should run the js script and the `pdflatex` command at the same time. So make sure
 pdflatex is installed. If there is an error with document tex file, it will get stuck. The process can be ended with `ctrl-z`.
-To get better error information pdflatex can be run on the `document_output` file.
+To get better error information, pdflatex can be run on the `document_output` file.
 
 ## Custom PCB
 The workshop was done using circuit boards designed in EasyEDA. The project can be found [here](https://easyeda.com/henguin1001/soldering-workshop). It should
